@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="handshake:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/handshake_jar</output-path>
+    <root id="archive" name="handshake.jar">
+      <element id="module-output" name="handshake" />
+    </root>
+  </artifact>
+</component>
