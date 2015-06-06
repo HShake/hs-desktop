@@ -7,6 +7,7 @@ import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -17,7 +18,11 @@ import javafx.stage.Stage;
 import org.json.simple.*;
 import org.json.simple.parser.JSONParser;
 
+import java.awt.*;
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Iterator;
@@ -138,10 +143,15 @@ public class Main extends Application {
 
             String[] test = result.getText().trim().split("\\r?\\n");
 
+            profileImages.getChildren().clear();
             for (String id : test) {
                 try {
-
-                    URL url = new URL("https://api.vk.com/method/users.get?user_ids=" + id + "&fields=photo_50");
+                    /*
+                    * 5592362
+59628
+14035574
+89491385*/
+                    URL url = new URL("https://api.vk.com/method/users.get?user_ids=" + id + "&fields=photo_50&lang=en");
                     URLConnection con = url.openConnection();
                     InputStream in = con.getInputStream();
                     Scanner sc = new Scanner(in);
@@ -152,9 +162,19 @@ public class Main extends Application {
                     JSONObject json1 = (JSONObject) new JSONParser().parse(jsonArray.get(0).toString());
                     System.out.println(json1);
 
+                    //Label name = new Label(json1.get("first_name").toString() + " " + json1.get("last_name"));
+                    ImageView image = new ImageView(json1.get("photo_50").toString());
+                    Button button = new Button(json1.get("first_name").toString() + " " + json1.get("last_name"), image);
+                    button.setOnAction(event1 ->
+                        getHostServices().showDocument("https://vk.com/id" + json1.get("uid").toString())
+                    );
 
-                    ImageView person = new ImageView(json1.get("photo_50").toString());
-                    profileImages.getChildren().add(person);
+                    //name.setLabelFor(button);
+                    //name.setAlignment(Pos.TOP_CENTER);
+
+
+                    //profileImages.getChildren().add(name);
+                    profileImages.getChildren().add(button);
                 } catch (Exception e) {
 
                 }
