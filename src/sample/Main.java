@@ -14,6 +14,9 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.*;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
 import javafx.stage.Stage;
 import org.json.simple.*;
 import org.json.simple.parser.JSONParser;
@@ -33,7 +36,9 @@ public class Main extends Application {
 
     private static Graph relationships = new Graph();
     public static TextArea result;
-    public static HBox profileImages;
+    public static VBox profileImages;
+    public int person1;
+    public int person2;
 
 
     static Vector<Integer> friends (int id) throws Exception{
@@ -70,24 +75,50 @@ public class Main extends Application {
         hBox.getChildren().add(firstID);
         hBox.getChildren().add(secondID);
         hBox.getChildren().add(find);
-        hBox.getChildren().add(result);
         VBox vBox = new VBox(50);
-        vBox.setLayoutY(200);
-        vBox.setLayoutX(200);
+        vBox.setLayoutY(50);
+        vBox.setLayoutX(50);
         vBox.getChildren().add(hBox);
-        profileImages = new HBox(10);
+        profileImages = new VBox(0);
+        profileImages.setAlignment(Pos.TOP_CENTER);
         vBox.getChildren().add(profileImages);
         Group root = new Group();
         root.getChildren().add(vBox);
         primaryStage.setTitle("Handshake");
-        primaryStage.setScene(new Scene(root, 1200, 1200));
+        primaryStage.setScene(new Scene(root, 600, 600));
         primaryStage.show();
 
         find.setOnAction(event -> {
             result.clear();
 
-            int person1 = Integer.parseInt(firstID.getText());
-            int person2 = Integer.parseInt(secondID.getText());
+            try {
+                URL url1 = new URL("https://api.vk.com/method/users.get?user_ids=" + firstID.getText().toString() + "&fields=photo_50&lang=en");
+                URLConnection con1 = url1.openConnection();
+                InputStream in1 = con1.getInputStream();
+                Scanner sc1 = new Scanner(in1);
+                String str1 = sc1.nextLine();
+                JSONObject json1 = (JSONObject) new JSONParser().parse(str1);
+                JSONArray jsonArray1 = (JSONArray) json1.get("response");
+
+                JSONObject json11 = (JSONObject) new JSONParser().parse(jsonArray1.get(0).toString());
+
+                URL url2 = new URL("https://api.vk.com/method/users.get?user_ids=" + secondID.getText().toString() + "&fields=photo_50&lang=en");
+                URLConnection con2 = url2.openConnection();
+                InputStream in2 = con2.getInputStream();
+                Scanner sc2 = new Scanner(in2);
+                String str2 = sc2.nextLine();
+                JSONObject json2 = (JSONObject) new JSONParser().parse(str2);
+                JSONArray jsonArray2 = (JSONArray) json2.get("response");
+
+                JSONObject json21 = (JSONObject) new JSONParser().parse(jsonArray2.get(0).toString());
+
+                person1 = Integer.parseInt(json11.get("uid").toString());
+                person2 = Integer.parseInt(json21.get("uid").toString());
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
 
 
             //Список моих друзей
@@ -146,11 +177,7 @@ public class Main extends Application {
             profileImages.getChildren().clear();
             for (String id : test) {
                 try {
-                    /*
-                    * 5592362
-59628
-14035574
-89491385*/
+
                     URL url = new URL("https://api.vk.com/method/users.get?user_ids=" + id + "&fields=photo_50&lang=en");
                     URLConnection con = url.openConnection();
                     InputStream in = con.getInputStream();
@@ -166,15 +193,28 @@ public class Main extends Application {
                     ImageView image = new ImageView(json1.get("photo_50").toString());
                     Button button = new Button(json1.get("first_name").toString() + " " + json1.get("last_name"), image);
                     button.setOnAction(event1 ->
-                        getHostServices().showDocument("https://vk.com/id" + json1.get("uid").toString())
+                                    getHostServices().showDocument("https://vk.com/id" + json1.get("uid").toString())
                     );
 
-                    //name.setLabelFor(button);
-                    //name.setAlignment(Pos.TOP_CENTER);
+                    button.setPrefWidth(200);
 
-
-                    //profileImages.getChildren().add(name);
                     profileImages.getChildren().add(button);
+
+
+                    if (id != test[test.length - 1]) {
+
+                        Line line = new Line(
+                                button.getLayoutX() + 125,
+                                button.getLayoutY(),
+                                button.getLayoutX() + 125,
+                                button.getLayoutY() + 40
+                        );
+
+                        line.setStrokeWidth(3);
+                        line.setStroke(Color.RED);
+                        profileImages.getChildren().add(line);
+                    }
+
                 } catch (Exception e) {
 
                 }
