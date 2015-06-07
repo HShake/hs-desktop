@@ -200,7 +200,6 @@ public class Main extends Application {
 
                     profileImages.getChildren().add(button);
 
-
                     if (id != test[test.length - 1]) {
 
                         Line line = new Line(
