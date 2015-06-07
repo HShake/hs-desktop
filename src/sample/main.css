@@ -1,0 +1,15 @@
+
+
+
+Button:hover {
+    -fx-background-color: dodgerblue;
+    -fx-text-fill: blanchedalmond;
+}
+
+.root {
+    -fx-background-color: aliceblue;
+}
+
+HBox {
+    -fx-background-color: aliceblue;
+}
