@@ -13,6 +13,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.json.simple.*;
@@ -60,27 +61,32 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         result = new TextArea();
+        Pane grid = new Pane();
+        grid.setPrefHeight(600);
         HBox hBox = new HBox(10);
         hBox.setLayoutX(50);
         hBox.setLayoutY(50);
-        TextField firstID = new TextField("Type id..");
-        TextField secondID = new TextField("Type id..");
-        Button find = new Button("Find");
+        TextField firstID = new TextField("Type id..");                 firstID.relocate(20, 20);
+        TextField secondID = new TextField("Type id..");                secondID.relocate(200, 20);
+        Button find = new Button("Find");                               find.relocate(380, 20);
 
-        hBox.getChildren().add(firstID);
-        hBox.getChildren().add(secondID);
-        hBox.getChildren().add(find);
-        hBox.getChildren().add(result);
+        grid.getChildren().add(firstID);
+        grid.getChildren().add(secondID);
+        grid.getChildren().add(find);
+        //hBox.getChildren().add(result);
         VBox vBox = new VBox(50);
         vBox.setLayoutY(200);
         vBox.setLayoutX(200);
         vBox.getChildren().add(hBox);
         profileImages = new HBox(10);
-        vBox.getChildren().add(profileImages);
+        grid.getChildren().add(profileImages);
+        profileImages.relocate(60, 300);
         Group root = new Group();
-        root.getChildren().add(vBox);
+        grid.getChildren().add(vBox);
         primaryStage.setTitle("Handshake");
-        primaryStage.setScene(new Scene(root, 1200, 1200));
+        Scene scene = new Scene(grid, 800, 600);
+        scene.getStylesheets().add(Main.class.getResource("main.css").toExternalForm());
+        primaryStage.setScene(scene);
         primaryStage.show();
 
         find.setOnAction(event -> {
@@ -90,7 +96,7 @@ public class Main extends Application {
             int person2 = Integer.parseInt(secondID.getText());
 
 
-            //Список моих друзей
+            //пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
             Vector<Integer> list = new Vector<Integer>();
             try {
                 list = Main.friends(person1);
@@ -98,25 +104,25 @@ public class Main extends Application {
                 e.printStackTrace();
             }
             Vector<Integer> list2 = new Vector<Integer>();
-            //Добавим в граф меня
+            //пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
             relationships.addVertex(person1);
-            //И всех моих друзей
+            //пїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
             for (Integer iter : list) {
                 Main.relationships.addVertex(iter);
                 Main.relationships.addEdge(iter, person1);
 
-                //Для каждого друга создадим список его друзей
+                //пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
                 try {
                     list2 = Main.friends(iter);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                //И добавим его в граф
+                //пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅ
                 for (Integer iter2 : list2) {
                     Main.relationships.addEdge(iter2, iter);
                 }
             }
-            //Со мной разобрались. Разберёмся и с Вами.
+            //пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ. пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅ пїЅпїЅпїЅпїЅ.
             try {
                 list = Main.friends(person2);
             } catch (Exception e) {
@@ -136,8 +142,8 @@ public class Main extends Application {
                     Main.relationships.addEdge(iter2, iter);
                 }
             }
-            //Граф заполнен.
-            //Выведем путь от меня до Вас.
+            //пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.
+            //пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅ.
             Main.relationships.printPath(person1, person2);
             //System.out.println(Main.relationships.hasVertex(person2));
 
