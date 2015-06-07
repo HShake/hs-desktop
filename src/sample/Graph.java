@@ -45,11 +45,8 @@ public class Graph {
         visited.clear();
         pathMap.clear();
         visited.add(start);
-        while (queue.size() != 0){
-            //
+        while (!queue.isEmpty()){
 
-
-            //1
             tmp = queue.get(0);
             queue.remove(0);
             if (tmp.intValue() == end.intValue()){
