@@ -55,7 +55,7 @@ public class Main extends Application {
                 strsInt.add(Integer.parseInt(friendsArray.get(i).toString()));
             }
         } catch (NullPointerException e) {
-            System.out.println("Catched");
+            System.out.println(e.getMessage());
         }
 
         return strsInt;
@@ -91,33 +91,8 @@ public class Main extends Application {
         find.setOnAction(event -> {
             result.clear();
 
-            try {
-                URL url1 = new URL("https://api.vk.com/method/users.get?user_ids=" + firstID.getText().toString() + "&fields=photo_50&lang=en");
-                URLConnection con1 = url1.openConnection();
-                InputStream in1 = con1.getInputStream();
-                Scanner sc1 = new Scanner(in1);
-                String str1 = sc1.nextLine();
-                JSONObject json1 = (JSONObject) new JSONParser().parse(str1);
-                JSONArray jsonArray1 = (JSONArray) json1.get("response");
-
-                JSONObject json11 = (JSONObject) new JSONParser().parse(jsonArray1.get(0).toString());
-
-                URL url2 = new URL("https://api.vk.com/method/users.get?user_ids=" + secondID.getText().toString() + "&fields=photo_50&lang=en");
-                URLConnection con2 = url2.openConnection();
-                InputStream in2 = con2.getInputStream();
-                Scanner sc2 = new Scanner(in2);
-                String str2 = sc2.nextLine();
-                JSONObject json2 = (JSONObject) new JSONParser().parse(str2);
-                JSONArray jsonArray2 = (JSONArray) json2.get("response");
-
-                JSONObject json21 = (JSONObject) new JSONParser().parse(jsonArray2.get(0).toString());
-
-                person1 = Integer.parseInt(json11.get("uid").toString());
-                person2 = Integer.parseInt(json21.get("uid").toString());
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            this.person1 = Integer.parseInt(new Person(firstID.getText()).getUid());
+            this.person2 = Integer.parseInt(new Person(secondID.getText()).getUid());
 
 
 
@@ -176,46 +151,28 @@ public class Main extends Application {
 
             profileImages.getChildren().clear();
             for (String id : test) {
-                try {
+                Person person = new Person(id);
+                ImageView image = new ImageView(person.getImage());
+                Button button = new Button(person.getName(), image);
+                button.setOnAction(event1 ->
+                                getHostServices().showDocument(person.getURL())
+                );
+                button.setPrefWidth(200);
 
-                    URL url = new URL("https://api.vk.com/method/users.get?user_ids=" + id + "&fields=photo_50&lang=en");
-                    URLConnection con = url.openConnection();
-                    InputStream in = con.getInputStream();
-                    Scanner sc = new Scanner(in);
-                    String str = sc.nextLine();
-                    JSONObject json = (JSONObject) new JSONParser().parse(str);
-                    JSONArray jsonArray = (JSONArray) json.get("response");
+                profileImages.getChildren().add(button);
 
-                    JSONObject json1 = (JSONObject) new JSONParser().parse(jsonArray.get(0).toString());
-                    System.out.println(json1);
+                if (!test[test.length - 1].equals(id)) {
 
-                    //Label name = new Label(json1.get("first_name").toString() + " " + json1.get("last_name"));
-                    ImageView image = new ImageView(json1.get("photo_50").toString());
-                    Button button = new Button(json1.get("first_name").toString() + " " + json1.get("last_name"), image);
-                    button.setOnAction(event1 ->
-                                    getHostServices().showDocument("https://vk.com/id" + json1.get("uid").toString())
+                    Line line = new Line(
+                            button.getLayoutX() + 125,
+                            button.getLayoutY(),
+                            button.getLayoutX() + 125,
+                            button.getLayoutY() + 40
                     );
 
-                    button.setPrefWidth(200);
-
-                    profileImages.getChildren().add(button);
-
-                    if (id != test[test.length - 1]) {
-
-                        Line line = new Line(
-                                button.getLayoutX() + 125,
-                                button.getLayoutY(),
-                                button.getLayoutX() + 125,
-                                button.getLayoutY() + 40
-                        );
-
-                        line.setStrokeWidth(3);
-                        line.setStroke(Color.RED);
-                        profileImages.getChildren().add(line);
-                    }
-
-                } catch (Exception e) {
-
+                    line.setStrokeWidth(3);
+                    line.setStroke(Color.RED);
+                    profileImages.getChildren().add(line);
                 }
             }
         });
